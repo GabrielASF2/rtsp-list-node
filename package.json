@@ -2,7 +2,7 @@
   "name": "rtsp-list",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev src/server.ts"
   },
