@@ -10,7 +10,7 @@ router.post(
     "/products", 
     multerConfig.single("file"), 
     (request: Request, response: Response) => {
-        console.log(request.file);
+        console.log(request.file?.buffer.toString("utf-8"));
         return response.send();
 })
 
