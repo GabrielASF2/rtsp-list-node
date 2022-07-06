@@ -14,8 +14,8 @@ model Products {
   id String @id @default(uuid())
   code_bar String 
   description String
-  price Float
-  quantity Int
+  price String
+  quantity String
 
   @@map("products")
 }
