@@ -36,7 +36,6 @@ router.post(
 
         for await(let line of productsLine ) {
             const row = line.split(",");
-            const param = env(`${row[3]}`)
            
             rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}`)
 /*
