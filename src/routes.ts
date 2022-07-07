@@ -2,9 +2,6 @@ import { Request, Response, Router } from "express";
 import { Readable } from "stream";
 import readline from "readline";
 import multer from "multer";
-import { PrismaClient } from "@prisma/client";
-const client = new PrismaClient();
-export { client };
 
 
 
@@ -35,31 +32,25 @@ router.post(
         });
 
         const products: Product [] = [];
+        const rtsp = [];
 
         for await(let line of productsLine ) {
-            const productLineSplit = line.split(",");
-            
+            const row = line.split(",");
+            const param = env(`${row[3]}`)
+           
+            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}`)
+/*
             products.push({
                 code_bar: productLineSplit[0], 
                 description: productLineSplit[1],
                 price: productLineSplit[2],
                 quantity: productLineSplit[3],
-            });
+            });*/
         }
 
-        for await (let {code_bar, description, price, quantity} of products) {
-            await client.products.create({
-                data: {
-                    code_bar,
-                    description,
-                    price,
-                    quantity,
-                }
 
-            })
-        }
         
-        return response.json(products);
+        return response.json(rtsp);
 
     }
 );
