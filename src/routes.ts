@@ -38,13 +38,6 @@ router.post(
             const row = line.split(",");
            
             rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}`)
-/*
-            products.push({
-                code_bar: productLineSplit[0], 
-                description: productLineSplit[1],
-                price: productLineSplit[2],
-                quantity: productLineSplit[3],
-            });*/
         }
 
 
