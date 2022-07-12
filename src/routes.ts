@@ -35,7 +35,7 @@ router.post(
         for await(let line of productsLine ) {
             const row = line.split(",");
            
-            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${intelbras}`)
+            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${intelbras?.replace("$CH","${row[10]}")}`)
         }
         return response.json(rtsp);
 
