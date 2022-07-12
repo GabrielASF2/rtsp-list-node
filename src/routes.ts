@@ -2,14 +2,12 @@ import { Request, Response, Router } from "express";
 import { Readable } from "stream";
 import readline from "readline";
 import multer from "multer";
-
-
+require('dotenv').config();
 
 
 const multerConfig = multer();
 
 const router = Router();
-
 interface Product {
     code_bar: string; 
     description: string;
@@ -34,15 +32,13 @@ router.post(
 
         const products: Product [] = [];
         const rtsp = [];
+        const intelbras = process.env.INTELBRAS;
 
         for await(let line of productsLine ) {
             const row = line.split(",");
            
-            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${process.env.INTELBRAS}`)
+            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${intelbras}`)
         }
-
-
-        
         return response.json(rtsp);
 
     }
