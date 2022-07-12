@@ -3,8 +3,6 @@ import { Readable } from "stream";
 import readline from "readline";
 import multer from "multer";
 require('dotenv').config();
-
-
 const multerConfig = multer();
 
 const router = Router();
@@ -16,7 +14,7 @@ interface Product {
 }
 
 router.post(
-    "/products", 
+    "/protocols", 
     multerConfig.single("file"), 
     async (request: Request, response: Response) => {
         const { file } = request;
