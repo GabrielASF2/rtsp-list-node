@@ -5,6 +5,7 @@ import multer from "multer";
 
 
 
+
 const multerConfig = multer();
 
 const router = Router();
@@ -37,7 +38,7 @@ router.post(
         for await(let line of productsLine ) {
             const row = line.split(",");
            
-            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}`)
+            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${process.env.INTELBRAS}`)
         }
 
 
