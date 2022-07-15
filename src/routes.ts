@@ -6,12 +6,6 @@ require('dotenv').config();
 const multerConfig = multer();
 
 const router = Router();
-interface Product {
-    code_bar: string; 
-    description: string;
-    price: string;
-    quantity: string;
-}
 
 router.post(
     "/protocols", 
@@ -28,16 +22,19 @@ router.post(
             input: readableFile
         });
 
-        const products: Product [] = [];
-        const rtsp = [];
-        const intelbras = process.env.INTELBRAS;
+        const rtspA = [];
+        const rtspB = [];
+        const typeA = process.env.TYPE_A;
+        const typeB = process.env.TYPE_B;
 
         for await(let line of productsLine ) {
             const row = line.split(",");
            
-            rtsp.push(`${row[7]}:${row[8]}@${row[5]}:${row[6]}/${intelbras?.replace("$CH","${row[10]}")}`)
+            rtspA.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeA?.replace("$CH",`${row[9]}`)} ${row[0]} 2 ${row[9]} `);
+            rtspB.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeB?.replace("$CH",`${row[9]}`)} ${row[0]} 2 ${row[9]} `);
+
         }
-        return response.json(rtsp);
+        return response.json(rtspB);
 
     }
 );
