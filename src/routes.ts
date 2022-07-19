@@ -4,6 +4,7 @@ import readline from "readline";
 import multer from "multer";
 require('dotenv').config();
 const multerConfig = multer();
+const xl = require('excel4node');
 
 const router = Router();
 
@@ -27,14 +28,38 @@ router.post(
         const typeA = process.env.TYPE_A;
         const typeB = process.env.TYPE_B;
 
+        
+
+        const wb = new xl.Workbook();
+        const ws = wb.addWorksheet('Worksheet Name');
+
+        const headingColumnNames =["GID", "URL", "SID", "STATE", "CAMS" ];
+        
+        let headingColumnIndex = 1;
+        headingColumnNames.forEach(heading => {ws.cell(1, headingColumnIndex++).string(heading)});
+        
+        let rowIndex =2;
+        let columnIndex = 1;
         for await(let line of productsLine ) {
             const row = line.split(",");
            
-            rtspA.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeA?.replace("$CH",`${row[9]}`)} ${row[0]} 2 ${row[9]} `);
-            rtspB.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeB?.replace("$CH",`${row[9]}`)} ${row[0]} 2 ${row[9]} `);
-
+            rtspA.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeA} ${row[0]} 2 ${row[9]} `);
+            rtspB.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeB} ${row[0]} 2 ${row[9]} `);
+            
+            ws.cell(rowIndex, 1).string(`${row[0]}-${row[8]}`);
+            ws.cell(rowIndex, 2).string(`${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeA}`);
+            ws.cell(rowIndex, 3).string(`${row[0]}`);
+            ws.cell(rowIndex, 4).string(`2`);
+            ws.cell(rowIndex, 5).string(`${row[9]}`);
+            rowIndex = rowIndex +1;
         }
-        return response.json(rtspB);
+
+
+        wb.write('rtsp.xlsx');
+
+
+
+        return response.json(rtspA);
 
     }
 );
