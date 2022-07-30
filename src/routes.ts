@@ -25,35 +25,52 @@ router.post(
             input: readableFile
         });
 
-    
-
         const rtspA = [];
         const rtspB = [];
         const typeA = process.env.TYPE_A;
         const typeB = process.env.TYPE_B;
 
         const ws2 = fileSystem.createWriteStream("data.csv");
-        const csvStream = csv.format({ headers: ["GID", "URL", "SID", "STATE", "CAMS" ] });
+        const csvStream = csv.format({ headers: ["GID", "SID", "URL", "STATE", "CAMS"] });
 
         for await(let line of productsLine ) {
             const row = line.split(",");
+            if ('INTELBRAS' == row[2].toUpperCase()) {
+                for (let idx = 0; idx < parseInt(row[9]); idx++) {
+                    const channel = typeA?.replace('$CH', (idx+1).toString());
+                    const sid = `${idx+1}02`;
+                    const url = `rtsp://${row[6]}:${row[7]}@${row[4]}:${row[5]}/${channel}`;
+                    rtspA.push(`${row[0]}-${row[8]} ${sid} ${url} 2 ${row[9]} `);
+                    csvStream.write({
+                        GID: `${row[0]}-${row[8]}`, 
+                        SID: sid, 
+                        URL: url,
+                        STATE: '2', 
+                        CAMS: `${row[9]}` 
+                    });
+                }    
+            } else {
+                for (let idx = 0; idx < parseInt(row[9]); idx++) {
+                    const channel = typeB?.replace('$CH', (idx+1).toString());
+                    const sid = String(channel?.split('/')[2]);
+                    const url = `rtsp://${row[6]}:${row[7]}@${row[4]}:${row[5]}/${channel}`;
+                    rtspB.push(`${row[0]}-${row[8]} ${sid} ${url} 2 ${row[9]} `);                    
+                    csvStream.write({
+                        GID: `${row[0]}-${row[8]}`, 
+                        SID: sid, 
+                        URL: url,
+                        STATE: '2', 
+                        CAMS: `${row[9]}` 
+                    });    
+                }
+            }
 
-           
-           
-            rtspA.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeA} ${row[0]} 2 ${row[9]} `);
-            rtspB.push(`${row[0]}-${row[8]} ${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeB} ${row[0]} 2 ${row[9]} `);
-            
-            csvStream.write({
-                GID: `${row[0]}-${row[8]}`, 
-                URL: `rtsp://${row[6]}:${row[7]}@${row[4]}:${row[5]}/${typeB}`, 
-                SID: `${row[0]}`, 
-                STATE: '2', 
-                CAMS: `${row[9]}` });
         }
+
         csvStream.pipe(ws2).on('end', () => process.exit());
         csvStream.end();
 
-      return response.json(rtspB);
+      return response.json(rtspA);
 
     }
 );
