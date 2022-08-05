@@ -10,6 +10,8 @@ const multerConfig = multer();
 const fileSystem = require("fs");
 const csv = require('fast-csv');
 const router = Router();
+let csvToJson = require('convert-csv-to-json');
+
 
 router.post(
     "/protocols", 
@@ -75,9 +77,23 @@ router.post(
         csvStream.pipe(ws).on('end', () => process.exit());
         csvStream.end();
 
-      return response.json(rtspB);
+       return response.send(file);
 
     }
 );
 
+router.get(
+    "/download", 
+    async (request, response) => {
+
+        let fileInputName = 'data.csv';
+        let fileOutputName = 'data.json';
+        csvToJson.parseSubArray('*',',').generateJsonFileFromCsv(fileInputName,fileOutputName);
+
+
+        response.download('data.csv', 'data.json');
+    }
+
+    
+);
 export { router };
