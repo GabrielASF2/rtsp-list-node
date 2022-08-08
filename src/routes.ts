@@ -13,6 +13,7 @@ const router = Router();
 let csvToJson = require('convert-csv-to-json');
 
 
+
 router.post(
     "/protocols", 
     multerConfig.single("file"), 
@@ -77,7 +78,7 @@ router.post(
         csvStream.pipe(ws).on('end', () => process.exit());
         csvStream.end();
 
-       return response.send(file);
+       return response.json(rtspA);
 
     }
 );
@@ -95,5 +96,37 @@ router.get(
     }
 
     
+);
+
+router.put(
+    "/json",
+    multerConfig.single("file"), 
+     async (request: Request, response: Response) => {
+       
+
+       const { file } = request;
+        const buffer = file?.buffer;
+
+        //const readableFile = new Readable();
+        //readableFile.push(buffer);
+        console.log(buffer?.toString());
+    }
+
+
+
+
+);
+
+router.put(
+    "/json2",
+    async (req, res) => {
+        //req?.body;
+        console.log(req.body);
+    }
+    
+
+
+
+
 );
 export { router };
