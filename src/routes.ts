@@ -17,9 +17,9 @@ let csvToJson = require('convert-csv-to-json');
 
 router.use(bodyParser.raw());
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({
+/*router.use(bodyParser.urlencoded({
     extended: true
-  }));
+  }));*/
 
 
 
@@ -107,22 +107,25 @@ router.get(
     
 );
 router.post(
-    "/json2",
+    "/json",
     async (req, res) => {
         var data = req.body;
         var gidSufx = data.code.padStart(4, '0');
         
+
+        const jsonRes = [];
+        
+
         const typeA = process.env.TYPE_A;
         const typeB = process.env.TYPE_B;
         
 
-        if ('INTELBRAS' == data.brand.toUpperCase()) {
+        if ('INTELBRAS' == data.brand.toUpperCase()) { 
             for (let idx = 0; idx < parseInt(data.camerasAtivas); idx++) {
                 const channel = typeA?.replace('$CH', (idx+1).toString());
                 const sid = `${idx+1}02`;
                 const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
-                console.log(url.toString);
-                res.json({
+                jsonRes.push({
                     GID: `${data.ctid}-${gidSufx}`,
                     SID: sid,
                     URL: url,
@@ -133,14 +136,17 @@ router.post(
                 const channel = typeB?.replace('$CH', (idx+1).toString());
                 const sid = String(channel?.split('/')[2]);
                 const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
-                res.json( {
+                jsonRes.push({
                     GID: `${data.ctid}-${gidSufx}`,
                     SID: sid,
                     URL: url,
-                });                        
+                    });                        
             }
         }
+
+        return res.json(jsonRes)
     }
+
 
 );
 export { router };
