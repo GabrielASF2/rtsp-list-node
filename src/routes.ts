@@ -3,6 +3,7 @@ import { Readable } from "stream";
 import readline from "readline";
 import multer from "multer";
 import { format } from "path";
+var bodyParser = require('body-parser');
 
 require('dotenv').config();
 
@@ -11,6 +12,12 @@ const fileSystem = require("fs");
 const csv = require('fast-csv');
 const router = Router();
 let csvToJson = require('convert-csv-to-json');
+
+router.use(bodyParser.raw());
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({
+    extended: true
+  }));
 
 
 
@@ -117,16 +124,15 @@ router.put(
 
 );
 
-router.put(
+router.post(
     "/json2",
     async (req, res) => {
-        //req?.body;
-        console.log(req.body);
+        var data = req.body;
+        console.log("Name: ", data.code);
+        console.log("Age: ", data.ctid);
+
+        return res.json(req.body);
     }
-    
-
-
-
 
 );
 export { router };
