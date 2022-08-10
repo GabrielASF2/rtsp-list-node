@@ -3,6 +3,8 @@ import { Readable } from "stream";
 import readline from "readline";
 import multer from "multer";
 import { format } from "path";
+import { arch } from "os";
+import { url } from "inspector";
 var bodyParser = require('body-parser');
 
 require('dotenv').config();
@@ -104,34 +106,40 @@ router.get(
 
     
 );
-
-router.put(
-    "/json",
-    multerConfig.single("file"), 
-     async (request: Request, response: Response) => {
-       
-
-       const { file } = request;
-        const buffer = file?.buffer;
-
-        //const readableFile = new Readable();
-        //readableFile.push(buffer);
-        console.log(buffer?.toString());
-    }
-
-
-
-
-);
-
 router.post(
     "/json2",
     async (req, res) => {
         var data = req.body;
-        console.log("Name: ", data.code);
-        console.log("Age: ", data.ctid);
+        var gidSufx = data.code.padStart(4, '0');
+        
+        const typeA = process.env.TYPE_A;
+        const typeB = process.env.TYPE_B;
+        
 
-        return res.json(req.body);
+        if ('INTELBRAS' == data.brand.toUpperCase()) {
+            for (let idx = 0; idx < parseInt(data.camerasAtivas); idx++) {
+                const channel = typeA?.replace('$CH', (idx+1).toString());
+                const sid = `${idx+1}02`;
+                const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
+                console.log(url.toString);
+                res.json({
+                    GID: `${data.ctid}-${gidSufx}`,
+                    SID: sid,
+                    URL: url,
+                    });
+            }    
+        } else {
+            for (let idx = 0; idx < parseInt(data.camerasAtivas); idx++) {
+                const channel = typeB?.replace('$CH', (idx+1).toString());
+                const sid = String(channel?.split('/')[2]);
+                const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
+                res.json( {
+                    GID: `${data.ctid}-${gidSufx}`,
+                    SID: sid,
+                    URL: url,
+                });                        
+            }
+        }
     }
 
 );
