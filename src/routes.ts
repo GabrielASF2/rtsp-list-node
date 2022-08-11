@@ -7,14 +7,16 @@ import { arch } from "os";
 import { url } from "inspector";
 var bodyParser = require('body-parser');
 
+/* -- Libs ---  */
 require('dotenv').config();
-
 const multerConfig = multer();
 const fileSystem = require("fs");
 const csv = require('fast-csv');
 const router = Router();
+const convert = require('json-2-csv');
 let csvToJson = require('convert-csv-to-json');
 
+/* -- Roter Use ---  */
 router.use(bodyParser.raw());
 router.use(bodyParser.json());
 /*router.use(bodyParser.urlencoded({
@@ -22,9 +24,9 @@ router.use(bodyParser.json());
   }));*/
 
 
-
+/* -- Router Post '/csv' - Read a CSV file and Create a new Csv File ---  */
 router.post(
-    "/protocols", 
+    "/csv", 
     multerConfig.single("file"), 
     async (request: Request, response: Response) => {
         const { file } = request;
@@ -44,6 +46,8 @@ router.post(
         const typeB = process.env.TYPE_B;
         
         var gidSufx ='';
+        var tempSid = '';
+        var indx = 0;
 
         const ws = fileSystem.createWriteStream("data.csv");
         const csvStream = csv.format({ headers: ["GID", "SID", "URL", "STATE", "CAMS"] });
@@ -57,95 +61,104 @@ router.post(
                     const channel = typeA?.replace('$CH', (idx+1).toString());
                     const sid = `${idx+1}02`;
                     const url = `rtsp://${row[6]}:${row[7]}@${row[4]}:${row[5]}/${channel}`;
-                    rtspA.push(`${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]} `);
+                    //rtspA.push(`${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]} `);
+                    rtspA.push(indx > 0 ? `${indx}-${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]}` : `${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]}`);
                     csvStream.write({
-                        GID: `${row[8]}-${gidSufx}`, 
+                        GID: indx > 0 ? `${indx}-${row[8]}-${gidSufx}` : `${row[8]}-${gidSufx}`, 
                         SID: sid, 
                         URL: url,
                         STATE: '2', 
                         CAMS: `${row[9]}` 
                     });
+                    if (idx+1 == parseInt(row[9])) {
+                        console.log(`${tempSid} - ${gidSufx}`);
+                        if (tempSid == '' || tempSid == gidSufx) {
+                            indx = indx+1;    
+                        } else {
+                            indx = 0;
+                        }                        
+                    };
                 }    
             } else {
                 for (let idx = 0; idx < parseInt(row[9]); idx++) {
                     const channel = typeB?.replace('$CH', (idx+1).toString());
                     const sid = String(channel?.split('/')[2]);
                     const url = `rtsp://${row[6]}:${row[7]}@${row[4]}:${row[5]}/${channel}`;
-                    rtspB.push(`${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]} `);                    
+                    rtspB.push(indx > 0 ? `${indx}-${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]}` : `${row[8]}-${gidSufx} ${sid} ${url} 2 ${row[9]}`);                 
                     csvStream.write({
-                        GID: `${row[8]}-${gidSufx}`, 
+                        GID: indx > 0 ? `${indx}-${row[8]}-${gidSufx}` : `${row[8]}-${gidSufx}`, 
                         SID: sid, 
                         URL: url,
                         STATE: '2', 
                         CAMS: `${row[9]}` 
-                    });    
+                    });
+                    if (idx+1 == parseInt(row[9])) {
+                        console.log(`${tempSid} - ${gidSufx}`);
+                        if (tempSid == '' || tempSid == gidSufx) {
+                            indx = indx+1;    
+                        } else {
+                            indx = 0;
+                        }                        
+                    };    
                 }
             }
+            tempSid = gidSufx;
 
         }
 
         csvStream.pipe(ws).on('end', () => process.exit());
         csvStream.end();
+        
 
-       return response.json(rtspA);
+       return response.jsonp(rtspA);
 
     }
 );
-
+/* -- Router Get - Download the file created in the route Post '/csv'   ---  */
 router.get(
     "/download", 
     async (request, response) => {
-
-        let fileInputName = 'data.csv';
-        let fileOutputName = 'data.json';
-        csvToJson.parseSubArray('*',',').generateJsonFileFromCsv(fileInputName,fileOutputName);
-
-
-        response.download('data.csv', 'data.json');
-    }
-
-    
+        response.download('data.csv')
+    }    
 );
-
+/* -- Router Post '/json' - Read a JSON and response a new Json File ---  */
 router.post(
     "/json",
     async (req, res) => {
-
         const jsonRes = new Array();
         let dataIn = JSON.parse(JSON.stringify(req.body));
 
         for(let indx = 0; indx < dataIn.length; indx++) {
-
             var gidSufx = dataIn[indx].code.padStart(4, '0');
-
+            
             const typeA = process.env.TYPE_A;
             const typeB = process.env.TYPE_B;
         
-
-            if ('INTELBRAS' == dataIn[indx].brand.toUpperCase()) { 
+            if ('INTELBRAS' == dataIn[indx].brand.toUpperCase()) {
                 for (let idx = 0; idx < parseInt(dataIn[indx].camerasAtivas); idx++) {
                     const channel = typeA?.replace('$CH', (idx+1).toString());
                     const sid = `${idx+1}02`;
                     const url = `rtsp://${dataIn[indx].user}:${dataIn[indx].pwd}@${dataIn[indx].addr}:${dataIn[indx].port}/${channel}`;
-                    jsonRes.push({
-                        GID: `${dataIn[indx].ctid}-${gidSufx}`,
-                        SID: sid,
-                        URL: url,
+                        jsonRes.push({
+                            GID: `${dataIn[indx].ctid}-${gidSufx}`,
+                            SID: sid,
+                            URL: url,
                         });
-                }    
+                    }    
             } else {
                 for (let idx = 0; idx < parseInt(dataIn[indx].camerasAtivas); idx++) {
                     const channel = typeB?.replace('$CH', (idx+1).toString());
                     const sid = String(channel?.split('/')[2]);
                     const url = `rtsp://${dataIn[indx].user}:${dataIn[indx].pwd}@${dataIn[indx].addr}:${dataIn[indx].port}/${channel}`;
-                    jsonRes.push({
-                        GID: `${dataIn[indx].ctid}-${gidSufx}`,
-                        SID: sid,
-                        URL: url,
+                        jsonRes.push({
+                            GID: `${dataIn[indx].ctid}-${gidSufx}`,
+                            SID: sid,
+                            URL: url,
                         });                        
+                    }
                 }
-            }
         }
+
         return res.json(jsonRes)
     }
 

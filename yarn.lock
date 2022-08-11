@@ -475,6 +475,11 @@ decompress-response@^3.3.0:
   dependencies:
     mimic-response "^1.0.0"
 
+deeks@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/deeks/-/deeks-2.5.1.tgz#c4e18a00cac3f8ff95a306463db8f533c879f436"
+  integrity sha512-fqrBeUz7f1UqaXDRzVB5RG2EfPk15HJRrb2pMZj8mLlSTtz4tRPsK5leFOskoHFPuyZ6+7aRM9j657fvXLkJ7Q==
+
 deep-extend@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
@@ -504,6 +509,11 @@ diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+
+doc-path@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/doc-path/-/doc-path-3.0.2.tgz#a7df9d58eadce28a2ddd4eda5aa392628fd75b6d"
+  integrity sha512-VRlA2OKSjTbHWj6wmSanxJ338fE/YN8pqmZ0FIWK5JWkIJMFRc4KmD35JtOrnjvVG0WrzOtDDNHx1lN1tkb+lA==
 
 dot-prop@^5.2.0:
   version "5.3.0"
@@ -932,6 +942,14 @@ isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==
+
+json-2-csv@^3.17.1:
+  version "3.17.1"
+  resolved "https://registry.yarnpkg.com/json-2-csv/-/json-2-csv-3.17.1.tgz#7e0b2497f47907dad68ec1d5e903f237fa47deb3"
+  integrity sha512-i6QynVy42GGMgY8fYde0mp6nYteptvk8oJsphOLiT3CITzw7NBBAiRwHV35kDOBii/elDQe1HCWLqaBPJ3istQ==
+  dependencies:
+    deeks "2.5.1"
+    doc-path "3.0.2"
 
 json-buffer@3.0.0:
   version "3.0.0"
