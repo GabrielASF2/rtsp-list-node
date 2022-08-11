@@ -106,44 +106,46 @@ router.get(
 
     
 );
+
 router.post(
     "/json",
     async (req, res) => {
-        var data = req.body;
-        var gidSufx = data.code.padStart(4, '0');
+
+        const jsonRes = new Array();
+        let dataIn = JSON.parse(JSON.stringify(req.body));
+
+        for(let indx = 0; indx < dataIn.length; indx++) {
+
+            var gidSufx = dataIn[indx].code.padStart(4, '0');
+
+            const typeA = process.env.TYPE_A;
+            const typeB = process.env.TYPE_B;
         
 
-        const jsonRes = [];
-        
-
-        const typeA = process.env.TYPE_A;
-        const typeB = process.env.TYPE_B;
-        
-
-        if ('INTELBRAS' == data.brand.toUpperCase()) { 
-            for (let idx = 0; idx < parseInt(data.camerasAtivas); idx++) {
-                const channel = typeA?.replace('$CH', (idx+1).toString());
-                const sid = `${idx+1}02`;
-                const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
-                jsonRes.push({
-                    GID: `${data.ctid}-${gidSufx}`,
-                    SID: sid,
-                    URL: url,
-                    });
-            }    
-        } else {
-            for (let idx = 0; idx < parseInt(data.camerasAtivas); idx++) {
-                const channel = typeB?.replace('$CH', (idx+1).toString());
-                const sid = String(channel?.split('/')[2]);
-                const url = `rtsp://${data.user}:${data.pwd}@${data.addr}:${data.port}/${channel}`;
-                jsonRes.push({
-                    GID: `${data.ctid}-${gidSufx}`,
-                    SID: sid,
-                    URL: url,
-                    });                        
+            if ('INTELBRAS' == dataIn[indx].brand.toUpperCase()) { 
+                for (let idx = 0; idx < parseInt(dataIn[indx].camerasAtivas); idx++) {
+                    const channel = typeA?.replace('$CH', (idx+1).toString());
+                    const sid = `${idx+1}02`;
+                    const url = `rtsp://${dataIn[indx].user}:${dataIn[indx].pwd}@${dataIn[indx].addr}:${dataIn[indx].port}/${channel}`;
+                    jsonRes.push({
+                        GID: `${dataIn[indx].ctid}-${gidSufx}`,
+                        SID: sid,
+                        URL: url,
+                        });
+                }    
+            } else {
+                for (let idx = 0; idx < parseInt(dataIn[indx].camerasAtivas); idx++) {
+                    const channel = typeB?.replace('$CH', (idx+1).toString());
+                    const sid = String(channel?.split('/')[2]);
+                    const url = `rtsp://${dataIn[indx].user}:${dataIn[indx].pwd}@${dataIn[indx].addr}:${dataIn[indx].port}/${channel}`;
+                    jsonRes.push({
+                        GID: `${dataIn[indx].ctid}-${gidSufx}`,
+                        SID: sid,
+                        URL: url,
+                        });                        
+                }
             }
         }
-
         return res.json(jsonRes)
     }
 
