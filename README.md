@@ -1,6 +1,28 @@
 # RTSP LIST
 
-Programa em Node que gera protocolos rtsp a partir de dados do fabricante do DVR/Câmera
+Ferramento para auxiliar a adição de usuários no Ubistream.
+Gera protocolos GID, SID e protocolos RTSP a partir de um CSV e/ou um JSON
 
+O CSV deve conter esses HEADERS:
 
-A ferramenta recebe um arquivo em csv., lê e gera um protocolo RTSP do streaming
+Código | Nome | Fabricante | Modelo | IP | Porta | Usuário | Senha | CtidReceptora | CamerasAtivas
+
+O JSON: 
+
+```json
+[
+    {
+        "code": String,
+        "brand": String,
+        "model": String,
+        "addr": String,
+        "port": Int,
+        "user": String,
+        "pwd": String,
+        "ctid": Int,
+        "camerasAtivas": Int, 
+    },
+]
+
+```
+
