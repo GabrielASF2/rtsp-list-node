@@ -1,6 +1,6 @@
 # RTSP LIST
 
-Ferramento para auxiliar a adição de usuários em sistemas de monitoramento.
+Ferramenta para auxiliar a adição de usuários em sistemas de monitoramento.
 Gera protocolos GID, SID e protocolos RTSP a partir de um CSV e/ou um JSON
 
 O CSV deve conter esses HEADERS:
